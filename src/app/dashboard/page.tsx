@@ -178,7 +178,7 @@ export default function DashboardPage() {
                       color: 'var(--text-primary)',
                       fontSize: '13px',
                     }}
-                    formatter={(value: number) => [formatCurrency(value), '']}
+                    formatter={(value: any) => [formatCurrency(value || 0), '']}
                   />
                   <Bar dataKey="valor" radius={[6, 6, 0, 0]}>
                     {barData.map((entry, i) => (
@@ -224,7 +224,7 @@ export default function DashboardPage() {
                         color: 'var(--text-primary)',
                         fontSize: '13px',
                       }}
-                      formatter={(value: number) => [formatCurrency(value), '']}
+                      formatter={(value: any) => [formatCurrency(value || 0), '']}
                     />
                   </PieChart>
                 </ResponsiveContainer>

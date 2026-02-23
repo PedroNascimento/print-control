@@ -156,12 +156,7 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main content */}
-      <main style={{
-        flex: 1,
-        marginLeft: '260px',
-        padding: '32px',
-        minHeight: '100vh',
-      }}>
+      <main className="main-content">
         {/* Mobile header */}
         <div style={{
           display: 'none',
@@ -184,15 +179,25 @@ export default function DashboardLayout({
       </main>
 
       <style>{`
+        .main-content {
+          flex: 1;
+          margin-left: 260px;
+          padding: 32px;
+          min-height: 100vh;
+          overflow-x: hidden;
+          max-width: calc(100vw - 260px);
+        }
+
         @media (max-width: 768px) {
           .mobile-overlay { display: block !important; }
           .mobile-header { display: flex !important; }
           aside {
             transform: ${sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'};
           }
-          main {
+          .main-content {
             margin-left: 0 !important;
             padding: 16px !important;
+            max-width: 100vw;
           }
         }
       `}</style>

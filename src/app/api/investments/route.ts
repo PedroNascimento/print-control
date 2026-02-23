@@ -4,7 +4,7 @@ import {
   createInvestmentUseCase,
   listInvestmentByPeriodUseCase,
 } from '@/main/container';
-import { createInvestmentSchema, periodQuerySchema } from '@/presentation/validators/financialSchemas';
+import { createInvestmentSchema, dateRangeQuerySchema } from '@/presentation/validators/financialSchemas';
 import { handleError } from '@/presentation/middlewares/ErrorHandler';
 
 export async function POST(request: NextRequest) {
@@ -32,15 +32,18 @@ export async function GET(request: NextRequest) {
     if (auth instanceof NextResponse) return auth;
 
     const { searchParams } = new URL(request.url);
-    const query = periodQuerySchema.parse({
-      year: searchParams.get('year'),
-      month: searchParams.get('month'),
+    const query = dateRangeQuerySchema.parse({
+      startDate: searchParams.get('startDate'),
+      endDate: searchParams.get('endDate'),
     });
+
+    const startDate = new Date(query.startDate + 'T00:00:00');
+    const endDate = new Date(query.endDate + 'T23:59:59.999');
 
     const result = await listInvestmentByPeriodUseCase.execute(
       auth.userId,
-      query.year,
-      query.month,
+      startDate,
+      endDate,
     );
 
     return NextResponse.json(result);

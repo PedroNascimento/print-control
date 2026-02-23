@@ -5,19 +5,18 @@ import { ValidationError } from '@/application/errors/ValidationError';
 import { DomainError } from '@/domain/errors/DomainError';
 import { EntityNotFoundError } from '@/domain/errors/EntityNotFoundError';
 
-export function handleError(error: unknown): NextResponse {
-  if (error instanceof ZodError) {
+export function handleError(error: any): NextResponse {
+    const issues = error?.issues || error?.errors || [];
     return NextResponse.json(
       {
         error: 'Dados inválidos',
-        details: error.errors.map((e) => ({
+        details: issues.map((e: any) => ({
           field: e.path.join('.'),
           message: e.message,
         })),
       },
       { status: 400 },
     );
-  }
 
   if (error instanceof UnauthorizedError) {
     return NextResponse.json(

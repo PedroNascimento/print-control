@@ -29,6 +29,15 @@ export async function api<T>(endpoint: string, options: ApiOptions = {}): Promis
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+
+    // Auto-redirect to login on auth failure
+    if (response.status === 401 && typeof window !== 'undefined') {
+      const { clearAuth } = await import('./auth');
+      clearAuth();
+      window.location.href = '/';
+      throw new ApiError(401, 'Sessão expirada. Redirecionando...');
+    }
+
     throw new ApiError(response.status, error.error || 'Erro na requisição');
   }
 

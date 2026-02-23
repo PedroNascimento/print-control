@@ -5,8 +5,8 @@ import { RevenueOutputDTO, toRevenueOutput } from '@/application/dtos/revenue/Re
 export class ListRevenueByPeriodUseCase {
   constructor(private readonly revenueRepo: IRevenueRepository) {}
 
-  async execute(userId: string, year: number, month: number): Promise<RevenueOutputDTO[]> {
-    const range = DateRange.forMonth(year, month);
+  async execute(userId: string, startDate: Date, endDate: Date): Promise<RevenueOutputDTO[]> {
+    const range = DateRange.create(startDate, endDate);
     const revenues = await this.revenueRepo.findByPeriod(userId, range);
     return revenues.map(toRevenueOutput);
   }

@@ -5,8 +5,8 @@ import { InvestmentOutputDTO, toInvestmentOutput } from '@/application/dtos/inve
 export class ListInvestmentByPeriodUseCase {
   constructor(private readonly investmentRepo: IInvestmentRepository) {}
 
-  async execute(userId: string, year: number, month: number): Promise<InvestmentOutputDTO[]> {
-    const range = DateRange.forMonth(year, month);
+  async execute(userId: string, startDate: Date, endDate: Date): Promise<InvestmentOutputDTO[]> {
+    const range = DateRange.create(startDate, endDate);
     const investments = await this.investmentRepo.findByPeriod(userId, range);
     return investments.map(toInvestmentOutput);
   }

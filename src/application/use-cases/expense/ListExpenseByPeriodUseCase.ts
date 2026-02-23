@@ -5,8 +5,8 @@ import { ExpenseOutputDTO, toExpenseOutput } from '@/application/dtos/expense/Ex
 export class ListExpenseByPeriodUseCase {
   constructor(private readonly expenseRepo: IExpenseRepository) {}
 
-  async execute(userId: string, year: number, month: number): Promise<ExpenseOutputDTO[]> {
-    const range = DateRange.forMonth(year, month);
+  async execute(userId: string, startDate: Date, endDate: Date): Promise<ExpenseOutputDTO[]> {
+    const range = DateRange.create(startDate, endDate);
     const expenses = await this.expenseRepo.findByPeriod(userId, range);
     return expenses.map(toExpenseOutput);
   }
