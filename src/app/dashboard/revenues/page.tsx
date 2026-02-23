@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, FormEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Calendar, X } from 'lucide-react';
 import { api, ApiError } from '@/lib/api';
 import { formatCurrency, formatDate, getCurrentMonthRange, getLastNDays, getAllTimeRange, formatPeriodLabel } from '@/lib/format';
 
@@ -147,7 +147,9 @@ export default function RevenuesPage() {
           {([['7d','7 dias'],['30d','30 dias'],['90d','90 dias'],['month','Mês atual'],['all','Tudo']] as [FilterPreset, string][]).map(([key, label]) => (
             <button key={key} className={`filter-btn ${activeFilter === key ? 'active' : ''}`} onClick={() => applyFilter(key)}>{label}</button>
           ))}
-          <button className={`filter-btn ${activeFilter === 'custom' ? 'active' : ''}`} onClick={() => applyFilter('custom')}>📅 Personalizado</button>
+          <button className={`filter-btn ${activeFilter === 'custom' ? 'active' : ''}`} onClick={() => applyFilter('custom')} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Calendar size={14} /> Personalizado
+          </button>
         </div>
         {showCustom && (
           <div className="filter-custom">
@@ -164,7 +166,9 @@ export default function RevenuesPage() {
       {showForm && createPortal(
         <div className="modal-overlay" onClick={() => setShowForm(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowForm(false)}>✕</button>
+            <button className="modal-close" onClick={() => setShowForm(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <X size={20} />
+            </button>
             <h2>Nova Receita</h2>
             <form onSubmit={handleCreate}>
               {error && (
