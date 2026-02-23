@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  passwordHash String       @map("password_hash")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  revenues     Revenue[]
+  expenses     Expense[]
+  investments  Investment[]
+
+  @@map("users")
+}
+
+model Revenue {
+  id                 String      @id @default(cuid())
+  description        String
+  valueCents         Int         @map("value_cents")
+  date               DateTime
+  type               RevenueType
+  client             String?
+  costCents          Int?        @map("cost_cents")
+  expenseReferenceId String?     @map("expense_reference_id")
+  observation        String?
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
+
+  user               User        @relation(fields: [userId], references: [id])
+  userId             String      @map("user_id")
+  expenseReference   Expense?    @relation(fields: [expenseReferenceId], references: [id])
+
+  @@index([userId, date])
+  @@index([userId, type])
+  @@map("revenues")
+}
+
+model Expense {
+  id            String          @id @default(cuid())
+  description   String
+  valueCents    Int             @map("value_cents")
+  date          DateTime
+  category      ExpenseCategory
+  type          ExpenseType
+  paymentMethod String?         @map("payment_method")
+  observation   String?
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  user          User            @relation(fields: [userId], references: [id])
+  userId        String          @map("user_id")
+
+  linkedRevenues Revenue[]
+
+  @@index([userId, date])
+  @@index([userId, category])
+  @@map("expenses")
+}
+
+model Investment {
+  id          String         @id @default(cuid())
+  description String
+  valueCents  Int            @map("value_cents")
+  date        DateTime
+  type        InvestmentType
+  observation String?
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  user        User           @relation(fields: [userId], references: [id])
+  userId      String         @map("user_id")
+
+  @@index([userId, date])
+  @@map("investments")
+}
+
+enum RevenueType {
+  OWN
+  OUTSOURCED
+}
+
+enum ExpenseType {
+  OPERATIONAL
+  OUTSOURCED
+}
+
+enum ExpenseCategory {
+  SUPPLIES
+  MAINTENANCE
+  ENERGY
+  OUTSOURCING
+  OTHER
+}
+
+enum InvestmentType {
+  EQUIPMENT
+  STRUCTURE
+  OTHER
+}
