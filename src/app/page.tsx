@@ -84,19 +84,17 @@ export default function AuthPage() {
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '56px',
-            height: '56px',
-            background: 'linear-gradient(135deg, var(--brand-600), var(--brand-800))',
-            borderRadius: 'var(--radius-lg)',
-            marginBottom: '16px',
-            fontSize: '24px',
-          }}>
-            🖨️
-          </div>
+          <img 
+            src="/icon.png" 
+            alt="PrintControl Logo" 
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '16px',
+              marginBottom: '16px',
+              display: 'inline-block'
+            }} 
+          />
           <h1 style={{
             fontSize: '28px',
             fontWeight: 700,

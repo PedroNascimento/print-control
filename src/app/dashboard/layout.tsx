@@ -3,12 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getUser, clearAuth, isAuthenticated, StoredUser } from '@/lib/auth';
+import { LayoutDashboard, Wallet, TrendingDown, Landmark, LogOut, Menu } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Visão Geral', icon: '📊' },
-  { href: '/dashboard/revenues', label: 'Receitas', icon: '💰' },
-  { href: '/dashboard/expenses', label: 'Despesas', icon: '📉' },
-  { href: '/dashboard/investments', label: 'Investimentos', icon: '🏗️' },
+  { href: '/dashboard', label: 'Visão Geral', icon: <LayoutDashboard size={20} strokeWidth={2.2} /> },
+  { href: '/dashboard/revenues', label: 'Receitas', icon: <Wallet size={20} strokeWidth={2.2} /> },
+  { href: '/dashboard/expenses', label: 'Despesas', icon: <TrendingDown size={20} strokeWidth={2.2} /> },
+  { href: '/dashboard/investments', label: 'Investimentos', icon: <Landmark size={20} strokeWidth={2.2} /> },
 ];
 
 export default function DashboardLayout({
@@ -72,18 +73,15 @@ export default function DashboardLayout({
           alignItems: 'center',
           gap: '12px',
         }}>
-          <div style={{
-            width: '36px',
-            height: '36px',
-            background: 'linear-gradient(135deg, var(--brand-600), var(--brand-800))',
-            borderRadius: 'var(--radius-md)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '18px',
-          }}>
-            🖨️
-          </div>
+          <img 
+            src="/icon.png" 
+            alt="PrintControl Logo" 
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '8px',
+            }} 
+          />
           <div>
             <div style={{ fontWeight: 700, fontSize: '16px', letterSpacing: '-0.3px' }}>
               PrintControl
@@ -122,7 +120,14 @@ export default function DashboardLayout({
                   transition: 'all 0.15s ease',
                 }}
               >
-                <span style={{ fontSize: '18px' }}>{item.icon}</span>
+                <span style={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  color: isActive ? 'var(--brand-500)' : 'var(--text-muted)',
+                  transition: 'color 0.15s ease'
+                }}>
+                  {item.icon}
+                </span>
                 {item.label}
               </a>
             );
@@ -147,9 +152,9 @@ export default function DashboardLayout({
               onClick={handleLogout}
               className="btn btn-ghost btn-sm"
               title="Sair"
-              style={{ fontSize: '16px', padding: '6px' }}
+              style={{ padding: '6px', color: 'var(--text-secondary)' }}
             >
-              🚪
+              <LogOut size={18} />
             </button>
           </div>
         </div>
@@ -167,9 +172,9 @@ export default function DashboardLayout({
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="btn btn-ghost"
-            style={{ fontSize: '20px', padding: '8px' }}
+            style={{ padding: '8px', color: 'var(--text-primary)' }}
           >
-            ☰
+            <Menu size={24} />
           </button>
           <span style={{ fontWeight: 700, fontSize: '16px' }}>PrintControl</span>
           <div style={{ width: '40px' }} />
