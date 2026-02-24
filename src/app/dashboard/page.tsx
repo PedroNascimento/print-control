@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
-import { formatCurrency, getMonthName, getCurrentPeriod } from '@/lib/format';
+import { formatCurrency, getMonthName, getCurrentPeriod, getLastNDays, formatPeriodLabel } from '@/lib/format';
+import { Calendar } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
@@ -28,24 +29,39 @@ const CATEGORY_LABELS: Record<string, string> = {
   OTHER: 'Outros',
 };
 
+type FilterPreset = 'today' | '7d' | 'month' | 'custom';
+
 export default function DashboardPage() {
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Month navigation state
   const [period, setPeriod] = useState(getCurrentPeriod);
+  
+  // Custom filter state
+  const [activeFilter, setActiveFilter] = useState<FilterPreset>('month');
+  const [dateRange, setDateRange] = useState<{ startDate: string; endDate: string } | null>(null);
+  const [showCustom, setShowCustom] = useState(false);
+  const [customStart, setCustomStart] = useState('');
+  const [customEnd, setCustomEnd] = useState('');
 
   const fetchSummary = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await api<SummaryData>(
-        `/api/summary?year=${period.year}&month=${period.month}`
-      );
+      let url = '';
+      if (activeFilter === 'month' || !dateRange) {
+        url = `/api/summary?year=${period.year}&month=${period.month}`;
+      } else {
+        url = `/api/summary?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`;
+      }
+      const data = await api<SummaryData>(url);
       setSummary(data);
     } catch {
       console.error('Erro ao carregar resumo');
     } finally {
       setLoading(false);
     }
-  }, [period]);
+  }, [period, activeFilter, dateRange]);
 
   useEffect(() => {
     fetchSummary();
@@ -65,6 +81,9 @@ export default function DashboardPage() {
     : [];
 
   function changeMonth(delta: number) {
+    setActiveFilter('month');
+    setDateRange(null);
+    setShowCustom(false);
     setPeriod((prev) => {
       let m = prev.month + delta;
       let y = prev.year;
@@ -72,6 +91,31 @@ export default function DashboardPage() {
       if (m < 1) { m = 12; y--; }
       return { year: y, month: m };
     });
+  }
+
+  function applyFilter(preset: FilterPreset) {
+    setActiveFilter(preset);
+    setShowCustom(false);
+    switch (preset) {
+      case 'today':
+        const today = new Date().toISOString().split('T')[0];
+        setDateRange({ startDate: today, endDate: today });
+        break;
+      case '7d': setDateRange(getLastNDays(7)); break;
+      case 'month':
+        setPeriod(getCurrentPeriod());
+        setDateRange(null);
+        break;
+      case 'custom': setShowCustom(true); break;
+    }
+  }
+
+  function applyCustomRange() {
+    if (customStart && customEnd) {
+      setDateRange({ startDate: customStart, endDate: customEnd });
+      setActiveFilter('custom');
+      setShowCustom(false);
+    }
   }
 
   if (loading && !summary) {
@@ -116,6 +160,29 @@ export default function DashboardPage() {
           </span>
           <button onClick={() => changeMonth(1)} className="btn btn-ghost btn-sm">→</button>
         </div>
+      </div>
+
+      {/* Filter Bar */}
+      <div className="filter-bar">
+        <div className="filter-buttons">
+          {([['today','Hoje'],['7d','7 dias'],['month','Mês Atual']] as [FilterPreset, string][]).map(([key, label]) => (
+            <button key={key} className={`filter-btn ${activeFilter === key ? 'active' : ''}`} onClick={() => applyFilter(key)}>{label}</button>
+          ))}
+          <button className={`filter-btn ${activeFilter === 'custom' ? 'active' : ''}`} onClick={() => applyFilter('custom')} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Calendar size={14} /> Personalizado
+          </button>
+        </div>
+        {showCustom && (
+          <div className="filter-custom">
+            <input type="date" className="input" value={customStart} onChange={e => setCustomStart(e.target.value)} style={{ maxWidth: '160px' }} />
+            <span style={{ color: 'var(--text-muted)' }}>até</span>
+            <input type="date" className="input" value={customEnd} onChange={e => setCustomEnd(e.target.value)} style={{ maxWidth: '160px' }} />
+            <button className="btn btn-primary btn-sm" onClick={applyCustomRange}>Aplicar</button>
+          </div>
+        )}
+        {dateRange && activeFilter !== 'month' && (
+          <div className="filter-period-label">{formatPeriodLabel(dateRange.startDate, dateRange.endDate)}</div>
+        )}
       </div>
 
       {summary && (

@@ -44,3 +44,15 @@ export const dateRangeQuerySchema = z.object({
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato YYYY-MM-DD'),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato YYYY-MM-DD'),
 });
+
+// Flexible Dashboard summary query schema
+export const dashboardSummaryQuerySchema = z.object({
+  year: z.coerce.number().int().min(2000).max(2100).optional(),
+  month: z.coerce.number().int().min(1).max(12).optional(),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato YYYY-MM-DD').optional(),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato YYYY-MM-DD').optional(),
+}).refine(data => {
+  if (data.startDate && data.endDate) return true;
+  if (data.year && data.month) return true;
+  return false;
+}, { message: "Deve fornecer (year e month) ou (startDate e endDate)" });

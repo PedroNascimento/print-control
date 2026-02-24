@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authMiddleware, revenueRepository, expenseRepository, investmentRepository } from '@/main/container';
-import { periodQuerySchema } from '@/presentation/validators/financialSchemas';
+import { dashboardSummaryQuerySchema } from '@/presentation/validators/financialSchemas';
 import { handleError } from '@/presentation/middlewares/ErrorHandler';
 import { DateRange } from '@/domain/value-objects/DateRange';
 
@@ -10,12 +10,22 @@ export async function GET(request: NextRequest) {
     if (auth instanceof NextResponse) return auth;
 
     const { searchParams } = new URL(request.url);
-    const query = periodQuerySchema.parse({
-      year: searchParams.get('year'),
-      month: searchParams.get('month'),
+    const query = dashboardSummaryQuerySchema.parse({
+      year: searchParams.get('year') || undefined,
+      month: searchParams.get('month') || undefined,
+      startDate: searchParams.get('startDate') || undefined,
+      endDate: searchParams.get('endDate') || undefined,
     });
 
-    const range = DateRange.forMonth(query.year, query.month);
+    let range: DateRange;
+    if (query.startDate && query.endDate) {
+      range = DateRange.create(
+        new Date(query.startDate + 'T00:00:00'),
+        new Date(query.endDate + 'T23:59:59.999')
+      );
+    } else {
+      range = DateRange.forMonth(query.year!, query.month!);
+    }
     const userId = auth.userId;
 
     const [totalRevenue, totalGrossProfit, totalExpense, totalInvestment, categoryBreakdown] = await Promise.all([
