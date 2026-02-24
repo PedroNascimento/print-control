@@ -14,6 +14,12 @@ import { PrismaUserRepository } from '@/infrastructure/repositories/PrismaUserRe
 import { PrismaRevenueRepository } from '@/infrastructure/repositories/PrismaRevenueRepository';
 import { PrismaExpenseRepository } from '@/infrastructure/repositories/PrismaExpenseRepository';
 import { PrismaInvestmentRepository } from '@/infrastructure/repositories/PrismaInvestmentRepository';
+import { PrismaServiceRepository } from '@/infrastructure/repositories/PrismaServiceRepository';
+import { CreateServiceUseCase } from '@/application/use-cases/services/CreateServiceUseCase';
+import { SearchServiceUseCase } from '@/application/use-cases/services/SearchServiceUseCase';
+import { ListServicesUseCase } from '@/application/use-cases/services/ListServicesUseCase';
+import { ToggleServiceStatusUseCase } from '@/application/use-cases/services/ToggleServiceStatusUseCase';
+import { CreateSaleUseCase } from '@/application/use-cases/pdv/CreateSaleUseCase';
 import { BcryptHashService } from '@/infrastructure/auth/BcryptHashService';
 import { JwtTokenService } from '@/infrastructure/auth/JwtTokenService';
 import { createAuthMiddleware } from '@/presentation/middlewares/AuthMiddleware';
@@ -23,6 +29,7 @@ const userRepository = new PrismaUserRepository();
 const revenueRepository = new PrismaRevenueRepository();
 const expenseRepository = new PrismaExpenseRepository();
 const investmentRepository = new PrismaInvestmentRepository();
+const serviceRepository = new PrismaServiceRepository();
 const hashService = new BcryptHashService();
 const tokenService = new JwtTokenService();
 
@@ -45,6 +52,15 @@ const deleteExpenseUseCase = new DeleteExpenseUseCase(expenseRepository);
 const createInvestmentUseCase = new CreateInvestmentUseCase(investmentRepository);
 const listInvestmentByPeriodUseCase = new ListInvestmentByPeriodUseCase(investmentRepository);
 const deleteInvestmentUseCase = new DeleteInvestmentUseCase(investmentRepository);
+
+// ─── Service Use Cases ────────────────────────────────────────────────
+const createServiceUseCase = new CreateServiceUseCase(serviceRepository);
+const searchServiceUseCase = new SearchServiceUseCase(serviceRepository);
+const listServicesUseCase = new ListServicesUseCase(serviceRepository);
+const toggleServiceStatusUseCase = new ToggleServiceStatusUseCase(serviceRepository);
+
+// ─── PDV Use Cases ───────────────────────────────────────────────────
+const createSaleUseCase = new CreateSaleUseCase(revenueRepository, serviceRepository);
 
 // ─── Middleware ───────────────────────────────────────────────────────
 const authMiddleware = createAuthMiddleware(validateTokenUseCase);
@@ -72,4 +88,12 @@ export {
   revenueRepository,
   expenseRepository,
   investmentRepository,
+  serviceRepository,
+  // Services
+  createServiceUseCase,
+  searchServiceUseCase,
+  listServicesUseCase,
+  toggleServiceStatusUseCase,
+  // PDV
+  createSaleUseCase,
 };

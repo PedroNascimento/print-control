@@ -17,6 +17,7 @@ model User {
   revenues     Revenue[]
   expenses     Expense[]
   investments  Investment[]
+  services     Service[]
 
   @@map("users")
 }
@@ -37,6 +38,8 @@ model Revenue {
   user               User        @relation(fields: [userId], references: [id])
   userId             String      @map("user_id")
   expenseReference   Expense?    @relation(fields: [expenseReferenceId], references: [id])
+
+  items              RevenueItem[]
 
   @@index([userId, date])
   @@index([userId, type])
@@ -104,4 +107,39 @@ enum InvestmentType {
   EQUIPMENT
   STRUCTURE
   OTHER
+}
+
+model Service {
+  id            String  @id @default(cuid())
+  code          String  
+  name          String
+  description   String?
+  defaultPrice  Int     @map("default_price")
+  estimatedCost Int?    @map("estimated_cost")
+  isActive      Boolean @default(true) @map("is_active")
+  category      String
+  
+  user          User    @relation(fields: [userId], references: [id])
+  userId        String  @map("user_id")
+
+  revenueItems  RevenueItem[]
+
+  @@unique([userId, code]) 
+  @@map("services")
+}
+
+model RevenueItem {
+  id          String  @id @default(cuid())
+  quantity    Int
+  unitPrice   Int     @map("unit_price") 
+  unitCost    Int?    @map("unit_cost")  
+  totalPrice  Int     @map("total_price")
+  
+  revenue     Revenue @relation(fields: [revenueId], references: [id], onDelete: Cascade)
+  revenueId   String  @map("revenue_id")
+  
+  service     Service? @relation(fields: [serviceId], references: [id])
+  serviceId   String?  @map("service_id") 
+
+  @@map("revenue_items")
 }

@@ -15,6 +15,13 @@ export interface RevenueOutputDTO {
   expenseReferenceId?: string;
   observation?: string;
   createdAt: string;
+  items?: {
+    id: string;
+    serviceName?: string;
+    quantity: number;
+    unitPriceReais: number;
+    totalPriceReais: number;
+  }[];
 }
 
 export function toRevenueOutput(revenue: Revenue): RevenueOutputDTO {
@@ -33,5 +40,12 @@ export function toRevenueOutput(revenue: Revenue): RevenueOutputDTO {
     expenseReferenceId: revenue.expenseReferenceId,
     observation: revenue.observation,
     createdAt: revenue.createdAt.toISOString(),
+    items: (revenue as any)._rawItems?.map((i: any) => ({
+      id: i.id,
+      serviceName: i.service?.name,
+      quantity: i.quantity,
+      unitPriceReais: i.unitPrice / 100,
+      totalPriceReais: i.totalPrice / 100,
+    })),
   };
 }

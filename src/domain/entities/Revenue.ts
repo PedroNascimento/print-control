@@ -1,5 +1,6 @@
 import { Money } from '../value-objects/Money';
 import { RevenueType } from '../enums/RevenueType';
+import { RevenueItem } from './RevenueItem';
 
 export interface RevenueProps {
   id: string;
@@ -12,6 +13,7 @@ export interface RevenueProps {
   cost?: Money;
   expenseReferenceId?: string;
   observation?: string;
+  items?: RevenueItem[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -27,6 +29,7 @@ export class Revenue {
   public readonly cost?: Money;
   public readonly expenseReferenceId?: string;
   public readonly observation?: string;
+  public readonly items?: RevenueItem[];
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
@@ -41,6 +44,7 @@ export class Revenue {
     this.cost = props.cost;
     this.expenseReferenceId = props.expenseReferenceId;
     this.observation = props.observation;
+    this.items = props.items;
     this.createdAt = props.createdAt ?? new Date();
     this.updatedAt = props.updatedAt ?? new Date();
   }

@@ -60,7 +60,9 @@ describe('Expense Use Cases', () => {
       vi.mocked(mockRepo.findByPeriod).mockResolvedValue([testExpense]);
 
       const useCase = new ListExpenseByPeriodUseCase(mockRepo);
-      const result = await useCase.execute('user-1', 2025, 2);
+      const startDate = new Date('2025-02-01T00:00:00');
+      const endDate = new Date('2025-02-28T23:59:59');
+      const result = await useCase.execute('user-1', startDate, endDate);
 
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe('exp-1');

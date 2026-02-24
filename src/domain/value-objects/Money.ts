@@ -78,6 +78,14 @@ export class Money {
     return `${this._currency} ${this.inReais.toFixed(2)}`;
   }
 
+  toJSON() {
+    return {
+      cents: this._amount,
+      reais: this.inReais,
+      currency: this._currency,
+    };
+  }
+
   private assertSameCurrency(other: Money): void {
     if (this._currency !== other._currency) {
       throw new InvalidMoneyError(

@@ -56,7 +56,9 @@ describe('Investment Use Cases', () => {
       vi.mocked(mockRepo.findByPeriod).mockResolvedValue([testInvestment]);
 
       const useCase = new ListInvestmentByPeriodUseCase(mockRepo);
-      const result = await useCase.execute('user-1', 2025, 1);
+      const startDate = new Date('2025-01-01T00:00:00');
+      const endDate = new Date('2025-01-31T23:59:59');
+      const result = await useCase.execute('user-1', startDate, endDate);
 
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe('inv-1');

@@ -122,4 +122,13 @@ describe('Money Value Object', () => {
       expect(Money.fromCents(99).toString()).toBe('BRL 0.99');
     });
   });
+
+  describe('serialization (toJSON)', () => {
+    it('should serialize to { cents, reais, currency }', () => {
+      const money = Money.fromCents(1500, 'USD');
+      expect(JSON.stringify(money)).toBe(
+        JSON.stringify({ cents: 1500, reais: 15, currency: 'USD' })
+      );
+    });
+  });
 });

@@ -16,6 +16,13 @@ interface RevenueItem {
   type: string;
   client?: string;
   costReais?: number;
+  items?: {
+    id: string;
+    serviceName?: string;
+    quantity: number;
+    unitPriceReais: number;
+    totalPriceReais: number;
+  }[];
 }
 
 const TYPE_LABELS: Record<string, string> = { OWN: 'Própria', OUTSOURCED: 'Terceirizada' };
@@ -220,7 +227,7 @@ export default function RevenuesPage() {
       )}
 
       {/* Table */}
-      <div className="card">
+      <div className="card table-container">
         {loading ? (
           <div style={{ padding: '48px', textAlign: 'center', color: 'var(--text-muted)' }}>
             <span className="spinner" style={{ margin: '0 auto 12px' }} /> Carregando...
@@ -233,12 +240,9 @@ export default function RevenuesPage() {
             </button>
           </div>
         ) : (
-          <>
-            {/* Desktop Table */}
-            <div className="table-container desktop-only">
-              <table>
-                <thead>
-                  <tr>
+          <table className="table">
+            <thead>
+              <tr>
                     <th>Descrição</th>
                     <th>Valor</th>
                     <th>Lucro Bruto</th>
@@ -251,13 +255,26 @@ export default function RevenuesPage() {
                 <tbody>
                   {revenues.map(r => (
                     <tr key={r.id}>
-                      <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{r.description}</td>
-                      <td style={{ color: 'var(--success)', fontWeight: 600 }}>{formatCurrency(r.valueReais)}</td>
-                      <td>{formatCurrency(r.grossProfitReais)}</td>
-                      <td>{formatDate(r.date)}</td>
-                      <td><span className={`badge ${r.type === 'OWN' ? 'badge-success' : 'badge-warning'}`}>{TYPE_LABELS[r.type]}</span></td>
-                      <td>{r.client || '—'}</td>
-                      <td>
+                      <td data-label="Descrição">
+                        <div style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                          {r.description}
+                          {r.items && r.items.length > 0 && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
+                              {r.items.map(item => (
+                                <span key={item.id} style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'var(--surface-bg)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--surface-border)' }}>
+                                  {item.quantity}x {item.serviceName || 'Serviço'} ({formatCurrency(item.totalPriceReais)})
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td data-label="Valor" style={{ color: 'var(--success)', fontWeight: 600 }}>{formatCurrency(r.valueReais)}</td>
+                      <td data-label="Lucro Bruto">{formatCurrency(r.grossProfitReais)}</td>
+                      <td data-label="Data">{formatDate(r.date)}</td>
+                      <td data-label="Tipo"><span className={`badge ${r.type === 'OWN' ? 'badge-success' : 'badge-warning'}`}>{TYPE_LABELS[r.type]}</span></td>
+                      <td data-label="Cliente">{r.client || '—'}</td>
+                      <td data-label="Ações">
                         <button className="btn btn-danger btn-sm" onClick={() => handleDelete(r.id)}>
                           <Trash2 size={16} />
                         </button>
@@ -266,46 +283,6 @@ export default function RevenuesPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
-
-            {/* Mobile Cards */}
-            <div className="mobile-card-list mobile-only">
-              {revenues.map(r => (
-                <div key={r.id} className="mobile-card">
-                  <div className="mobile-card-header">
-                    <div>
-                      <div className="mobile-card-title">{r.description}</div>
-                      <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{formatDate(r.date)}</div>
-                    </div>
-                    <div className="mobile-card-value" style={{ color: 'var(--success)' }}>
-                      {formatCurrency(r.valueReais)}
-                    </div>
-                  </div>
-                  
-                  <div className="mobile-card-body">
-                    <div className="mobile-card-item">
-                      <span className="mobile-card-label">Lucro Bruto</span>
-                      <span>{formatCurrency(r.grossProfitReais)}</span>
-                    </div>
-                    <div className="mobile-card-item">
-                      <span className="mobile-card-label">Tipo</span>
-                      <span><span className={`badge ${r.type === 'OWN' ? 'badge-success' : 'badge-warning'}`}>{TYPE_LABELS[r.type]}</span></span>
-                    </div>
-                    <div className="mobile-card-item" style={{ gridColumn: '1 / -1' }}>
-                      <span className="mobile-card-label">Cliente</span>
-                      <span style={{ color: 'var(--text-primary)' }}>{r.client || '—'}</span>
-                    </div>
-                  </div>
-
-                  <div className="mobile-card-actions">
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(r.id)} style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                      <Trash2 size={16} /> Excluir
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
         )}
       </div>
     </div>

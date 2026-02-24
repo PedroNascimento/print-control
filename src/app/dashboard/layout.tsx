@@ -3,13 +3,15 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getUser, clearAuth, isAuthenticated, StoredUser } from '@/lib/auth';
-import { LayoutDashboard, Wallet, TrendingDown, Landmark, LogOut, Menu } from 'lucide-react';
+import { LayoutDashboard, Wallet, TrendingDown, Landmark, LogOut, Menu, PackageSearch, ShoppingCart } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Visão Geral', icon: <LayoutDashboard size={20} strokeWidth={2.2} /> },
+  { href: '/dashboard/pdv', label: 'PDV', icon: <ShoppingCart size={20} strokeWidth={2.2} /> },
   { href: '/dashboard/revenues', label: 'Receitas', icon: <Wallet size={20} strokeWidth={2.2} /> },
   { href: '/dashboard/expenses', label: 'Despesas', icon: <TrendingDown size={20} strokeWidth={2.2} /> },
   { href: '/dashboard/investments', label: 'Investimentos', icon: <Landmark size={20} strokeWidth={2.2} /> },
+  { href: '/dashboard/services', label: 'Catálogo', icon: <PackageSearch size={20} strokeWidth={2.2} /> },
 ];
 
 export default function DashboardLayout({

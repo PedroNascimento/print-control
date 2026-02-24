@@ -56,3 +56,22 @@ export const dashboardSummaryQuerySchema = z.object({
   if (data.year && data.month) return true;
   return false;
 }, { message: "Deve fornecer (year e month) ou (startDate e endDate)" });
+
+export const createServiceSchema = z.object({
+  code: z.string().min(1, 'Código obrigatório').max(20, 'Código máximo 20 caracteres').toUpperCase(),
+  name: z.string().min(2, 'Nome muito curto').max(100, 'Nome muito longo'),
+  description: z.string().optional(),
+  defaultPriceCents: z.number().int().positive('Preço deve ser positivo'),
+  estimatedCostCents: z.number().int().min(0, 'Custo não pode ser negativo').optional(),
+  category: z.string().min(1, 'Categoria obrigatória'),
+  isActive: z.boolean().optional().default(true),
+});
+
+export const createSaleSchema = z.object({
+  client: z.string().optional(),
+  observation: z.string().optional(),
+  items: z.array(z.object({
+    serviceId: z.string().uuid(),
+    quantity: z.number().int().positive('Quantidade deve ser positiva'),
+  })).min(1, 'A venda deve conter pelo menos 1 serviço'),
+});
