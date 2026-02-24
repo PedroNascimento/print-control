@@ -68,6 +68,19 @@ export class PrismaRevenueRepository implements IRevenueRepository {
     return Money.fromCents(result._sum.valueCents ?? 0);
   }
 
+  async getGrossProfitByPeriod(userId: string, range: DateRange): Promise<Money> {
+    const result = await prisma.revenue.aggregate({
+      where: {
+        userId,
+        date: { gte: range.start, lte: range.end },
+      },
+      _sum: { valueCents: true, costCents: true },
+    });
+    const totalValue = result._sum.valueCents ?? 0;
+    const totalCost = result._sum.costCents ?? 0;
+    return Money.fromCents(totalValue - totalCost);
+  }
+
   async linkToExpense(revenueId: string, expenseId: string): Promise<void> {
     await prisma.revenue.update({
       where: { id: revenueId },

@@ -18,14 +18,15 @@ export async function GET(request: NextRequest) {
     const range = DateRange.forMonth(query.year, query.month);
     const userId = auth.userId;
 
-    const [totalRevenue, totalExpense, totalInvestment, categoryBreakdown] = await Promise.all([
+    const [totalRevenue, totalGrossProfit, totalExpense, totalInvestment, categoryBreakdown] = await Promise.all([
       revenueRepository.getTotalByPeriod(userId, range),
+      revenueRepository.getGrossProfitByPeriod(userId, range),
       expenseRepository.getTotalByPeriod(userId, range),
       investmentRepository.getTotal(userId),
       expenseRepository.getByCategory(userId, range),
     ]);
 
-    const netProfit = totalRevenue.subtract(totalExpense);
+    const netProfit = totalGrossProfit.subtract(totalExpense);
     const profitMargin = totalRevenue.amount > 0
       ? ((netProfit.amount / totalRevenue.amount) * 100)
       : 0;

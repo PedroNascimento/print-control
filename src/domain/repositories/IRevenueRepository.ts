@@ -7,6 +7,7 @@ export interface IRevenueRepository {
   findById(id: string, userId: string): Promise<Revenue | null>;
   findByPeriod(userId: string, range: DateRange): Promise<Revenue[]>;
   getTotalByPeriod(userId: string, range: DateRange): Promise<Money>;
+  getGrossProfitByPeriod(userId: string, range: DateRange): Promise<Money>;
   linkToExpense(revenueId: string, expenseId: string): Promise<void>;
   delete(id: string, userId: string): Promise<void>;
 }
